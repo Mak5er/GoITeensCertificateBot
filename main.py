@@ -2,6 +2,7 @@ import os
 import telebot
 from PIL import Image, ImageDraw, ImageFont
 from dotenv import load_dotenv
+from barelimg import draw_on
 
 load_dotenv()
 
@@ -25,16 +26,9 @@ def create(message):
 
 
 def send_sert(message):
-    with Image.open("template.png") as im:
-        draw = ImageDraw.Draw(im)
-        font_path = "Cleanvertising_Black.ttf"
-        font_size = 35
-        font = ImageFont.truetype(font_path, font_size)
-        text_wight = draw.textsize(text=message.text, font=font)
-        image_wight = im.size
-        text_position = [(image_wight[0] - text_wight[0]) // 2, 620]
-        draw.text(text_position, message.text, font=font)
-    bot.send_photo(message.chat.id, photo=im)
+    #with open("template.png", "rb") as im:
+    m = draw_on(message.text)  # im.read(), 
+    bot.send_photo(message.chat.id, photo=m)
 
 
 bot.polling()
