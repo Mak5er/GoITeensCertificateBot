@@ -4,7 +4,7 @@ from telebot.async_telebot import AsyncTeleBot, types
 from telebot.asyncio_handler_backends import State, StatesGroup
 
 from certificates_bot.bot import bot
-from certificates_bot.utils.generate_certicifate import generate_certificate
+from certificates_bot.utils.generate_certificate import generate_certificate
 
 pool = ThreadPoolExecutor(50)
 
