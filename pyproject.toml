@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "goiteenscertificatebot"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pillow = "^9.5.0"
+python-dotenv = "^1.0.0"
+uvloop = "^0.17.0"
+pyrogram = "^2.0.106"
+pydantic = "^1.10.9"
+tgcrypto = "^1.2.5"
+transitions = "^0.9.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
