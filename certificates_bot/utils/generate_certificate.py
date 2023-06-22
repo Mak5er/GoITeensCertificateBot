@@ -3,7 +3,6 @@ from pathlib import Path
 from time import perf_counter
 from barelimg import draw_on
 
-from PIL import Image, ImageDraw, ImageFont
 from pyrogram.client import Client
 from pyrogram.handlers.disconnect_handler import DisconnectHandler
 
@@ -11,13 +10,6 @@ from certificates_bot.bot import bot
 from certificates_bot.logger import get_logger
 
 logger = get_logger(__name__)
-
-
-async def handle_disconnect(_: Client) -> None:
-    IMAGE.close()
-
-
-bot.add_handler(DisconnectHandler(handle_disconnect))
 
 
 def generate_certificate(text: str) -> io.BytesIO:
