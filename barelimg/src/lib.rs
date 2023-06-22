@@ -52,8 +52,6 @@ fn load_font() -> Font<'static> {
 
 #[pyfunction]
 fn draw_on<'a>(py: Python<'a>, text: &'a str) -> &'a PyByteArray {  // img: Vec<u8>, 
-    //let mut image = load_image(img);
-    //let text_str = text.as_str();
     let drewn = draw_text(
         TEMPLATE_IMG.as_ref(),  // TEMPLATE_IMG: Arc<DynamicImage>
         COLOR,
@@ -63,21 +61,14 @@ fn draw_on<'a>(py: Python<'a>, text: &'a str) -> &'a PyByteArray {  // img: Vec<
         &FONT,
         text
     );
+
     let mut pngbuf: Cursor<Vec<u8>> = Cursor::new(Vec::new());
     drewn.write_to(&mut pngbuf, ImageFormat::Png).unwrap();
-    // Python::with_gil(|py| {
-    //     let ret: Result<PyBytes, PyErr> = Ok(*PyBytes::new(py, &pngbuf.into_inner()));
-    //     ret.as_ref()
-    // })
-    // Python::with_gil(|py| {
-    //     let ret = PyBytes::new(py, &pngbuf.into_inner());
-    //     ret
-    // })
     PyByteArray::new(py, &pngbuf.into_inner())
     //PyBytes::new(py, &pngbuf.into_inner())
 }
 
-/// A Python module implemented in Rust.
+
 #[pymodule]
 fn barelimg(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(draw_on, m)?)?;
