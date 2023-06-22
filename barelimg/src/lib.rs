@@ -27,14 +27,6 @@ fn load_image_f() -> DynamicImage {
     DynamicImage::default()
 }
 
-#[allow(dead_code)]
-fn load_image(img: Vec<u8>) -> DynamicImage {
-    if let Ok(image) = image::load_from_memory(&img) {
-        return image;
-    }
-    DynamicImage::default()
-}
-
 
 fn calculate_position(text: &str) -> i32 {
     // w595
