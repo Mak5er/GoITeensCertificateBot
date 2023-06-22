@@ -16,7 +16,7 @@ lazy_static! {
 }
 
 const COLOR: Rgba<u8> = Rgba([255, 255, 255, 255]);
-const FONT_SIZE: f32 = 35f32;
+const FONT_SIZE: f32 = 51f32;
 const SCALE: Scale = Scale{x: FONT_SIZE, y: FONT_SIZE};
 
 
@@ -58,7 +58,7 @@ fn draw_on<'a>(py: Python<'a>, text: &'a str) -> &'a PyByteArray {  // img: Vec<
         TEMPLATE_IMG.as_ref(),  // TEMPLATE_IMG: Arc<DynamicImage>
         COLOR,
         calculate_position(text),
-        620,
+        612,
         SCALE,
         &FONT,
         text
