@@ -1,5 +1,5 @@
-use pyo3::{prelude::*, types::PyBytes};
-use std::{io::Cursor, path::Path, fs::File};
+use pyo3::{prelude::*, types::PyBytes, ffi::PyCodec_StreamReader};
+use std::{io::Cursor, path::Path, fs::File, f64::consts::E};
 use image::{ImageFormat, DynamicImage, Rgba, GenericImageView};
 use imageproc::{drawing::draw_text, drawing::text_size};
 use rusttype::{Font, Scale};
@@ -38,7 +38,7 @@ fn load_image(img: Vec<u8>) -> DynamicImage {
 fn calculate_position(text: &str) -> i32 {
     // w595
     let ts = text_size(SCALE, &FONT, text).0;
-    let pos = ((595 - ts) as f64 / 2 as f64).round() as i32;
+    let pos = (595 - ts) / 2;
     pos
 }
 
@@ -51,21 +51,22 @@ fn load_font() -> Font<'static> {
 }
 
 #[pyfunction]
-fn draw_on(text: String) -> PyResult<Py<PyBytes>> {  // img: Vec<u8>, 
+fn draw_on(text: &str) -> PyResult<PyBytes> {  // img: Vec<u8>, 
     //let mut image = load_image(img);
+    //let text_str = text.as_str();
     let drewn = draw_text(
-        TEMPLATE_IMG.as_ref(),
+        TEMPLATE_IMG.as_ref(),  // TEMPLATE_IMG: Arc<DynamicImage>
         COLOR,
-        calculate_position(text.as_str()),
+        calculate_position(text),
         620,
         SCALE,
         &FONT,
-        &text[..]
+        text
     );
     let mut pngbuf: Cursor<Vec<u8>> = Cursor::new(Vec::new());
     drewn.write_to(&mut pngbuf, ImageFormat::Png).unwrap();
     Python::with_gil(|py| {
-        Ok(PyBytes::new(py, &pngbuf.into_inner()).into())
+        Ok(*PyBytes::new(py, &pngbuf.into_inner()))
     })
 }
 
