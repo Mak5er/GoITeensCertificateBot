@@ -1,6 +1,6 @@
-use pyo3::{prelude::*, types::PyBytes, ffi::PyCodec_StreamReader};
-use std::{io::Cursor, path::Path, fs::File, f64::consts::E};
-use image::{ImageFormat, DynamicImage, Rgba, GenericImageView};
+use pyo3::{prelude::*, types::PyByteArray};
+use std::{io::Cursor, path::Path, fs::File};
+use image::{ImageFormat, DynamicImage, Rgba};
 use imageproc::{drawing::draw_text, drawing::text_size};
 use rusttype::{Font, Scale};
 use std::io::Read;
@@ -14,19 +14,20 @@ lazy_static! {
 lazy_static! {
     static ref TEMPLATE_IMG: Arc<DynamicImage> = Arc::new(load_image_f());
 }
-static COLOR: Rgba<u8> = Rgba([255, 255, 255, 255]);
+
+const COLOR: Rgba<u8> = Rgba([255, 255, 255, 255]);
 const FONT_SIZE: f32 = 35f32;
-static SCALE: Scale = Scale{x: FONT_SIZE, y: FONT_SIZE};
+const SCALE: Scale = Scale{x: FONT_SIZE, y: FONT_SIZE};
 
 
 fn load_image_f() -> DynamicImage {
-    println!("loadimagef");
     if let Ok(image) = image::io::Reader::open("template.png").unwrap().decode() {
         return image;
     }
     DynamicImage::default()
 }
 
+#[allow(dead_code)]
 fn load_image(img: Vec<u8>) -> DynamicImage {
     if let Ok(image) = image::load_from_memory(&img) {
         return image;
@@ -43,7 +44,6 @@ fn calculate_position(text: &str) -> i32 {
 }
 
 fn load_font() -> Font<'static> {
-    println!("loadfont");
     let font_path = Path::new("./font.ttf");
     let mut font_data: Vec<u8> = Vec::new();
     File::open(font_path).unwrap().read_to_end(&mut font_data).unwrap();
@@ -51,7 +51,7 @@ fn load_font() -> Font<'static> {
 }
 
 #[pyfunction]
-fn draw_on(text: &str) -> PyResult<PyBytes> {  // img: Vec<u8>, 
+fn draw_on<'a>(py: Python<'a>, text: &'a str) -> &'a PyByteArray {  // img: Vec<u8>, 
     //let mut image = load_image(img);
     //let text_str = text.as_str();
     let drewn = draw_text(
@@ -65,9 +65,16 @@ fn draw_on(text: &str) -> PyResult<PyBytes> {  // img: Vec<u8>,
     );
     let mut pngbuf: Cursor<Vec<u8>> = Cursor::new(Vec::new());
     drewn.write_to(&mut pngbuf, ImageFormat::Png).unwrap();
-    Python::with_gil(|py| {
-        Ok(*PyBytes::new(py, &pngbuf.into_inner()))
-    })
+    // Python::with_gil(|py| {
+    //     let ret: Result<PyBytes, PyErr> = Ok(*PyBytes::new(py, &pngbuf.into_inner()));
+    //     ret.as_ref()
+    // })
+    // Python::with_gil(|py| {
+    //     let ret = PyBytes::new(py, &pngbuf.into_inner());
+    //     ret
+    // })
+    PyByteArray::new(py, &pngbuf.into_inner())
+    //PyBytes::new(py, &pngbuf.into_inner())
 }
 
 /// A Python module implemented in Rust.
