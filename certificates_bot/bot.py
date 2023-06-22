@@ -7,9 +7,9 @@ from pyrogram.client import Client
 
 
 class Config(BaseModel):
-    api_hash: str
+    app_hash: str
     bot_token: str
-    api_id: int
+    app_id: int
 
 
 def load_config() -> Config:
@@ -31,6 +31,6 @@ config = load_config()
 bot = Client(
     name='my_bot',
     bot_token=config.bot_token,
-    api_id=config.api_id,
-    api_hash=config.api_hash
+    api_id=config.app_id,
+    api_hash=config.app_hash
 )
