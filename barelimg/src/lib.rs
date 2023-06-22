@@ -21,7 +21,7 @@ const SCALE: Scale = Scale{x: FONT_SIZE, y: FONT_SIZE};
 
 
 fn load_image_f() -> DynamicImage {
-    if let Ok(image) = image::io::Reader::open("template.png").unwrap().decode() {
+    if let Ok(image) = image::io::Reader::open("./static/template.png").unwrap().decode() {
         return image;
     }
     DynamicImage::default()
@@ -36,7 +36,7 @@ fn calculate_position(text: &str) -> i32 {
 }
 
 fn load_font() -> Font<'static> {
-    let font_path = Path::new("./font.ttf");
+    let font_path = Path::new("./static/font.ttf");
     let mut font_data: Vec<u8> = Vec::new();
     File::open(font_path).unwrap().read_to_end(&mut font_data).unwrap();
     Font::try_from_vec(font_data).unwrap()

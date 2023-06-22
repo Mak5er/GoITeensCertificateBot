@@ -87,4 +87,11 @@ Cargo.lock
 *.pdb
 
 .env
-.vscode
+.venv
+
+# Runtime files
+__pycache__
+*.session
+*.session-journal
+runtime.log
+poetry.lock
