@@ -4,11 +4,13 @@ from time import perf_counter
 
 from pyrogram import filters, types
 from pyrogram.client import Client
+from pyrogram.enums import ChatAction
 from pyrogram.handlers.message_handler import MessageHandler
 from transitions import Machine
 
 from certificates_bot.fsm import InMemoryStorage, StorageKey
 from certificates_bot.logger import get_logger
+from certificates_bot.messages import messages
 from certificates_bot.utils.generate_certificate import generate_certificate
 
 pool = ThreadPoolExecutor(50)
@@ -22,7 +24,7 @@ class CreateStates(enum.Enum):
 
 async def create_handler(_: Client, message: types.Message):
     await message.reply(
-        text="Введіть своє ім'я, щоб згенерувати сертифікат"
+        text=messages.enter_name
     )
 
     storage.add_entry(
@@ -34,7 +36,7 @@ async def create_handler(_: Client, message: types.Message):
     )
 
 
-async def send_sert_handler(client: Client, message: types.Message):
+async def send_sert_handler(bot: Client, message: types.Message):
     storage_key = StorageKey(
         chat_id=message.chat.id,
         user_id=message.from_user.id
@@ -48,20 +50,28 @@ async def send_sert_handler(client: Client, message: types.Message):
 
     if message.text is None:
         await message.reply(
-            text="Будь ласка, надішліть текст, який ви хоче бачити на сертифікаті"
+            text=messages.please_sent_text
         )
 
         return
 
 
+    await bot.send_chat_action(message.chat.id, ChatAction.UPLOAD_PHOTO)
     logger.info(f'Generating certificate for {message.chat.id = }')
     certificate_image = pool.submit(generate_certificate, message.text).result()
 
     start = perf_counter()
-    await client.send_photo(message.chat.id, photo=certificate_image)
+    await bot.send_photo(
+        message.chat.id,
+        photo=certificate_image,
+        reply_to_message_id=message.id,
+        caption=messages.certificate_ready
+    )
+
     end = perf_counter()
 
     logger.info(f'Sent image to {message.chat.id = } in {end - start}s.')
+    await bot.send_chat_action(message.chat.id, ChatAction.CANCEL)
     storage.clear_entry(storage_key)
 
 
