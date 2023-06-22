@@ -1,16 +1,36 @@
-import os
+from os import environ
+from typing import Any
 
 from dotenv import load_dotenv
-from telebot.async_telebot import AsyncTeleBot
-from telebot.asyncio_storage import StateMemoryStorage
+from pydantic import BaseModel
+from pyrogram.client import Client
 
-load_dotenv()
 
-TOKEN = os.getenv("TOKEN")
-if TOKEN is None:
-    raise Exception("Could not load you bot token, please check your .env file")
+class Config(BaseModel):
+    api_hash: str
+    bot_token: str
+    api_id: int
 
-bot = AsyncTeleBot(
-    token=TOKEN,
-    state_storage=StateMemoryStorage()
+
+def load_config() -> Config:
+    load_dotenv()
+    name_value: dict[str, Any] = dict()
+
+    for name in map(str.upper, Config.__fields__.keys()):
+        value = environ.get(name, None)
+
+        if value is None:
+            raise Exception(f"Could not load {name}, please check your .env file")
+
+        name_value[name.lower()] = value
+
+    return Config.parse_obj(name_value)
+
+
+config = load_config()
+bot = Client(
+    name='my_bot',
+    bot_token=config.bot_token,
+    api_id=config.api_id,
+    api_hash=config.api_hash
 )

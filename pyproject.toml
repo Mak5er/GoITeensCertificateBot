@@ -9,10 +9,11 @@ readme = "README.md"
 python = "^3.11"
 pillow = "^9.5.0"
 python-dotenv = "^1.0.0"
-pytelegrambotapi = "^4.12.0"
 uvloop = "^0.17.0"
-aiofiles = "^23.1.0"
-aiohttp = "^3.8.4"
+pyrogram = "^2.0.106"
+pydantic = "^1.10.9"
+tgcrypto = "^1.2.5"
+transitions = "^0.9.0"
 
 
 [build-system]
