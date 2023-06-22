@@ -16,9 +16,8 @@ lazy_static! {
 }
 static COLOR: Rgba<u8> = Rgba([255, 255, 255, 255]);
 const FONT_SIZE: f32 = 35f32;
-lazy_static! {
-    static ref SCALE: Scale = Scale::uniform(FONT_SIZE);
-}
+static SCALE: Scale = Scale{x: FONT_SIZE, y: FONT_SIZE};
+
 
 fn load_image_f() -> DynamicImage {
     println!("loadimagef");
@@ -38,8 +37,8 @@ fn load_image(img: Vec<u8>) -> DynamicImage {
 
 fn calculate_position(text: &str) -> i32 {
     // w595
-    let ts = text_size(*SCALE, &FONT, text);
-    let pos = ((595 - ts.0) as f64 / 2 as f64).round() as i32;
+    let ts = text_size(SCALE, &FONT, text).0;
+    let pos = ((595 - ts) as f64 / 2 as f64).round() as i32;
     pos
 }
 
@@ -59,9 +58,9 @@ fn draw_on(text: String) -> PyResult<Py<PyBytes>> {  // img: Vec<u8>,
         COLOR,
         calculate_position(text.as_str()),
         620,
-        *SCALE,
+        SCALE,
         &FONT,
-        text.as_str()
+        &text[..]
     );
     let mut pngbuf: Cursor<Vec<u8>> = Cursor::new(Vec::new());
     drewn.write_to(&mut pngbuf, ImageFormat::Png).unwrap();
